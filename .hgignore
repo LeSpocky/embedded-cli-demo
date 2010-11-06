@@ -5,3 +5,4 @@ build
 
 # tmp files
 **.swp
+tmp.diff
