@@ -2,7 +2,11 @@ syntax: glob
 
 # folders
 build
+doc
 
 # tmp files
 **.swp
 tmp.diff
+
+# log files
+doxygen.log
