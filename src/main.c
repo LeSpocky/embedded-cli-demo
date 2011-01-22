@@ -6,11 +6,11 @@
 int main( int argc, char * argv[] ) {
     unsigned char   _argc = 0, i;
     char *          _argv[( INPUT_LINE_LENGTH + 1 ) / 2] = { 0 };
-    char            ch;
     char *          cmd_string;
     struct t_cmd    cmd_to_check = { "", NULL };
     char            input_buffer[INPUT_LINE_LENGTH] = { 0 };
     char            input_buffer_cpy[INPUT_LINE_LENGTH] = { 0 };
+    char            trash_buffer[1024];
     size_t          input_string_length;
     char            last_return_value = EXIT_SUCCESS;
     struct t_cmd *  p_found_cmd;
@@ -25,9 +25,9 @@ int main( int argc, char * argv[] ) {
         _argc = 0;
         memset( _argv, 0, ( INPUT_LINE_LENGTH + 1 ) / 2 );
 
+
         /*  Print prompt and read one line with length INPUT_LINE_LENGTH
-         *  from STDIN. Handle trailing newline character for later
-         *  processing of command input line.   */
+         *  from STDIN. */
         if ( last_return_value ) {
             (void) printf( "%d > ", last_return_value );
         } else {
@@ -39,6 +39,21 @@ int main( int argc, char * argv[] ) {
         }
 
         input_string_length = strlen( input_buffer );
+
+        /*  if input line longer than INPUT_LINE_LENGTH, flush.
+         *  note: this is not platform independent, especially on
+         *  microcontrollers STDIN maybe unbuffered!    */
+        if ( input_string_length == INPUT_LINE_LENGTH - 1 &&
+                input_buffer[input_string_length-1] != '\n' ) {
+            do {
+                fgets( trash_buffer, 1024, stdin );
+            } while ( trash_buffer[strlen(trash_buffer)-1] != '\n' );
+            fprintf( stderr, 
+                    "cmdline was longer than %d characters, truncated!\n",
+                    INPUT_LINE_LENGTH - 1 );
+        }
+
+        /*  handle trailing newline */
         if ( input_buffer[input_string_length-1] == '\n' ) {
             input_buffer[input_string_length-1] = ' ';
         }
@@ -50,7 +65,6 @@ int main( int argc, char * argv[] ) {
             _argc++;
             cmd_string = strtok( NULL, " \t" );
         }
-        printf( "_argc: %d\n", _argc );
 
         /*  Parse for command and assemble _argv[]  */
         strncpy( input_buffer_cpy, input_buffer, INPUT_LINE_LENGTH );
@@ -71,13 +85,6 @@ int main( int argc, char * argv[] ) {
             last_return_value = p_found_cmd->func( _argc, (const char **) _argv );
         }
 
-        /**
-          * @todo   flush stdio input buffer to not get input more than
-          *         our buffer size next time. issue warning if
-          *         truncated.
-          */
-        puts( "Flushing input ..." ); 
-        while ( ( ch = getchar() ) != '\n' && ch != EOF );
 
     }
 

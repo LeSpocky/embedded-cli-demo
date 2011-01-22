@@ -1,9 +1,9 @@
 #ifndef _CMD_H_
 #define _CMD_H_
 
-#define INPUT_LINE_LENGTH   20  /**< maximum length of command line including terminating zero                                          */
-#define MAX_CMD_LENGTH      5   /**< maximum length of command string itself, including terminating zero                                */
-#define NO_OF_COMMANDS      3   /**< number of commands, has to be changed whenever struct t_cmd commands[NO_OF_COMMANDS] is changed    */
+#define INPUT_LINE_LENGTH   21  /**< maximum length of command line including terminating zero                                          */
+#define MAX_CMD_LENGTH      6   /**< maximum length of command string itself, including terminating zero                                */
+#define NO_OF_COMMANDS      4   /**< number of commands, has to be changed whenever struct t_cmd commands[NO_OF_COMMANDS] is changed    */
 
 /**
  *  Function pointer type for command evaluation.
@@ -31,6 +31,19 @@ extern struct t_cmd commands[NO_OF_COMMANDS];
  *  @return -1, 0 or 1 depending which is less, equal or greater.
  */
 extern int cmd_cmp( const void *e1, const void *e2 );
+
+/**
+ *  Produce dummy error.
+ *
+ *  @param[in]  argc    number of arguments
+ *  @param[in]  argv[]  list of null terminated argument strings
+ *
+ *  @return EXIT_FAILURE, yes, always!
+ */
+extern char func_dummy(
+        const unsigned char argc,
+        const char *        argv[]
+);
 
 /**
  *  Dump any memory content. Open for changing.
